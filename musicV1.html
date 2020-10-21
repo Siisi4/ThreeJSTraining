@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+    <title>three.js webaudio - visualizer</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="main.css">
+    <script type="text/javascript" src="../libs/threeR97.js"></script>
+</head>
+
+<body>
+    <div id="overlay">
+        <button id="startButton">Play</button>
+    </div>
+    <div id="container"></div>
+    <script type="module">
+        var scene, camera, renderer, analyser, uniforms;
+
+            var startButton = document.getElementById( 'startButton' );
+			startButton.addEventListener( 'click', init );
+            
+			function init() {
+                var overlay = document.getElementById( 'overlay' );
+				overlay.remove();
+        
+				var container = document.getElementById( 'container' );
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setClearColor( 0x000000 );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				container.appendChild( renderer.domElement );
+
+				scene = new THREE.Scene();
+
+				camera = new THREE.Camera();
+
+				var listener = new THREE.AudioListener();
+				var audio = new THREE.Audio( listener );
+				var file = './NinVsProdigy.mp3';
+
+				if ( /(iPad|iPhone|iPod)/g.test( navigator.userAgent ) ) {
+					var loader = new THREE.AudioLoader();
+					loader.load( file, function ( buffer ) {
+						audio.setBuffer( buffer );
+						audio.play();
+					} );
+				} else {
+					var mediaElement = new Audio( file );
+					mediaElement.play();
+					audio.setMediaElementSource( mediaElement );
+				}
+            
+				analyser = new THREE.AudioAnalyser( audio, 128 );
+
+				window.addEventListener( 'resize', onResize, false );
+
+				render();
+
+			}
+
+			function onResize() {
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+
+			function render() {
+
+				requestAnimationFrame( render );
+				renderer.render( scene, camera );
+                
+                analyser.getFrequencyData();
+                console.log(analyser.data[15]);
+
+			}
+
+		</script>
+
+</body></html>

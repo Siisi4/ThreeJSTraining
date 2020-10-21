@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Webaudio - Player</title>
+		<meta charset="utf-8">
+		<link type="text/css" rel="stylesheet" href="main.css">
+        <script type="text/javascript" src="../libs/three-r121.js"></script>
+	</head>
+	<body>
+        <div id="overlay">
+			<button id="startButton">Play</button>
+		</div>
+		<div id="WebGL-output"></div>
+		<script>		
+            var startButton = document.getElementById( 'startButton' );
+			startButton.addEventListener( 'click', init );          
+			
+            function init() {
+                var overlay = document.getElementById( 'overlay' );
+				overlay.remove(); 
+				var listener = new THREE.AudioListener();
+				var audio = new THREE.Audio( listener );
+				var file = './NinVsProdigy.mp3';
+				if ( /(iPad|iPhone|iPod)/g.test( navigator.userAgent ) ) {
+					var loader = new THREE.AudioLoader();
+					loader.load( file, function ( buffer ) {
+						audio.setBuffer( buffer );
+						audio.play();
+					} );
+				} else {
+					var mediaElement = new Audio( file );
+					mediaElement.play();
+					audio.setMediaElementSource( mediaElement );
+				}
+			}
+		</script>
+	</body>
+</html>

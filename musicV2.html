@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Webaudio - visualizer</title>
+		<meta charset="utf-8">
+		<link type="text/css" rel="stylesheet" href="main.css">
+        <script type="text/javascript" src="../libs/threeR97.js"></script>
+	</head>
+	<body>
+        <div id="overlay">
+			<button id="startButton">Play</button>
+		</div>
+		<div id="container"></div>
+		<script type="module">
+			var scene, camera, renderer, analyser;
+            
+            var building = []; 
+
+            var startButton = document.getElementById( 'startButton' );
+			startButton.addEventListener( 'click', init );
+            
+			function init() {
+                var overlay = document.getElementById( 'overlay' );
+				overlay.remove();
+
+				var container = document.getElementById( 'container' );
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setClearColor( 0x000000 );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				container.appendChild( renderer.domElement );
+
+				scene = new THREE.Scene();
+
+				camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
+                camera.position.y = 1500;
+                camera.position.z = 900;
+                camera.position.x = 200;
+                camera.lookAt(scene.position);
+                scene.add(camera);
+                
+                var light = new THREE.DirectionalLight(0xf6e86d, 1); 
+                light.position.set(1, 3, 2);
+                scene.add(light);
+
+				var listener = new THREE.AudioListener();
+
+				var audio = new THREE.Audio( listener );
+				var file = './NinVsProdigy.mp3';
+
+				if ( /(iPad|iPhone|iPod)/g.test( navigator.userAgent ) ) {
+					var loader = new THREE.AudioLoader();
+					loader.load( file, function ( buffer ) {
+						audio.setBuffer( buffer );
+						audio.play();
+					} );
+				} else {
+					var mediaElement = new Audio( file );
+					mediaElement.play();
+					audio.setMediaElementSource( mediaElement );
+				}
+
+				analyser = new THREE.AudioAnalyser( audio, 128 );
+                
+                var geometry = new THREE.CubeGeometry(10, 10, 10);
+                var material = new THREE.MeshPhongMaterial({overdraw: true, color: 0xcccccc});
+                // Cloned buildings
+                for (var i = 0; i < 128; i++) {
+                    building[i] = new THREE.Mesh(geometry.clone(), material.clone());
+                    building[i].position.x = i * 30 - 1200;
+                    building[i].position.z = 0;
+                    scene.add(building[i]);
+                }
+
+				window.addEventListener( 'resize', onResize, false );
+
+				render();
+
+			}
+
+			function onResize() {
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+
+			function render() {
+				requestAnimationFrame( render );
+				renderer.render( scene, camera );         
+                analyser.getFrequencyData();
+                for (var i = 0; i < 128; i++) {
+                    building[i].scale.z = analyser.data[i]/5;
+                    building[i].scale.y = analyser.data[i];
+                    building[i].scale.x = analyser.data[i]/10;
+                }
+			}
+
+		</script>
+
+	</body>
+</html>

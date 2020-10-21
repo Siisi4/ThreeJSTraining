@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Récap 21.10.2020</title>
+    <script type="text/javascript" src="three-r121.js"></script>
+    <script type="text/javascript" src="dat.gui.js"></script>
+</head>
+
+<body>
+
+    <div id="WebGL-output"></div>
+
+    <script type="text/javascript">
+        // Déclaration des variables globales
+        var block = [];
+        var scene, camera, cube, spotLight, renderer;
+        var alpha = 0;
+        
+        init();
+
+        function init() {
+
+            // créer ma scene 3D
+            scene = new THREE.Scene();
+
+            //créer la caméra
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.x = -30;
+            camera.position.y = 40;
+            camera.position.z = 30;
+            camera.lookAt(scene.position);
+            scene.add(camera);
+            
+
+            // Créer un mesh et l'ajouter à la scène
+            
+            
+            
+            //var texture = new THREE.TextureLoader().load( 'TextureforCube.jpg' );
+            
+            var geometry = new THREE.CubeGeometry(5, 5, 20);
+            var material = new THREE.MeshLambertMaterial({
+                map : 0xcccccc 
+            });
+            
+            for (var i=0; i<10; i++){
+                block[i] = new THREE.Mesh(geometry, material);
+                block[i].position.x = i*10 -25;
+                block[i].position.z = 0;
+                block[i].z = 2
+                scene.add(block[i]);
+            }
+            
+            
+            
+            //cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+            //cube.rotation.x = -0.5 * Math.PI;
+            //cube.position.x = 0;
+            //cube.position.y = 0;
+            //cube.position.z = 0;
+            //scene.add(cube);
+
+            // Créer la lumière
+            spotLight = new THREE.SpotLight(0xffffff);
+            spotLight.position.set(-40, 60, -10);
+            scene.add(spotLight);
+
+            //v-créer le renderer
+            renderer = new THREE.WebGLRenderer();
+            renderer.setClearColor(0xFFFFFF);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            document.getElementById("WebGL-output").appendChild(renderer.domElement);
+            
+            renderer.render(scene , camera);
+            
+        }
+
+        function render() {
+            requestAnimationFrame(render);
+            renderer.render(scene , camera);
+            
+            alpha += 0.02;
+            for (var i=0; i<10; i++){
+                block[i].scale.z = Math.abs(5* Math.sin(alpha+i));
+                //block[i].material.color = new THREE.color(Math.abs(Math.sin(alpha * i)), 
+                //0.5, 0.7)};
+            }
+        
+        }
+        
+            
+            
+        
+        
+        function animate() {
+
+				requestAnimationFrame( animate );
+
+				//cube.rotation.x += 0.005;
+				//cube.rotation.y += 0.01;
+
+				renderer.render( scene, camera );
+        }
+
+
+    </script>
+
+</body>
+
+</html>
