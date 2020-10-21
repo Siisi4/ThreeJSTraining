@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Rappel 8</title>
+    <script type="text/javascript" src="../libs/three-r121.js"></script>
+    <script type="text/javascript" src="../libs/dat.gui.js"></script>
+</head>
+
+<body>
+    <div id="overlay">
+        <button id="startButton">Play</button>
+    </div>
+
+    <div id="WebGL-output"></div>
+
+    <script type="text/javascript">
+        var block = [];
+        var scene, camera, renderer, spotlight;
+        var alpha = 0;
+        var controlerUI = {
+            cameraX: -30,
+            cameraY: 40,
+            cameraZ: 30
+        };
+        
+        var analyser;
+
+        var startButton = document.getElementById('startButton');
+        startButton.addEventListener('click', init);
+
+        function init() {
+
+            var gui = new dat.GUI();
+            gui.add(controlerUI, 'cameraX', -100, 100);
+            gui.add(controlerUI, 'cameraY', -100, 100);
+            gui.add(controlerUI, 'cameraZ', -100, 100);
+
+            var overlay = document.getElementById('overlay');
+            overlay.remove();
+
+            scene = new THREE.Scene();
+
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.x = -30;
+            camera.position.y = 40;
+            camera.position.z = 30;
+            camera.lookAt(scene.position);
+            scene.add(camera);
+
+            var geometry = new THREE.CubeGeometry(5, 5, 10);
+            var material = new THREE.MeshPhongMaterial({
+                color: 0xcccccc
+            });
+
+            for (var i = 0; i < 10; i++) {
+                block[i] = new THREE.Mesh(geometry, material);
+                block[i].position.x = i * 10 - 25;
+                block[i].position.z = 0;
+                scene.add(block[i]);
+            }
+
+
+            spotLight = new THREE.SpotLight(0xffffff, 1);
+            spotLight.position.set(-40, 60, -10);
+            scene.add(spotLight);
+
+            renderer = new THREE.WebGLRenderer({
+                antialias: true
+            });
+            renderer.setClearColor(0xFFFFFF);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            document.getElementById("WebGL-output").appendChild(renderer.domElement);
+
+            var listener = new THREE.AudioListener();
+            var audio = new THREE.Audio(listener);
+            var file = './NinVsProdigy.mp3';
+
+            if (/(iPad|iPhone|iPod)/g.test(navigator.userAgent)) {
+                var loader = new THREE.AudioLoader();
+                loader.load(file, function(buffer) {
+                    audio.setBuffer(buffer);
+                    audio.play();
+                });
+            } else {
+                var mediaElement = new Audio(file);
+                mediaElement.play();
+                audio.setMediaElementSource(mediaElement);
+            }
+            
+            analyser = new THREE.AudioAnalyser( audio, 128 );
+
+            render();
+
+        };
+
+        function render() {
+            requestAnimationFrame(render);
+            renderer.render(scene, camera);
+            
+            analyser.getFrequencyData();
+            
+            alpha += 0.01;
+            
+            for (var i = 0; i < 10; i++) {
+                block[i].scale.z = Math.abs(Math.sin(alpha + i)) * 8;
+                block[i].scale.y = Math.floor(analyser.data[30]/15);
+                block[i].position.y = Math.abs(Math.sin(alpha + i)) * 20;
+                block[i].material.color = new THREE.Color(Math.abs(Math.sin(alpha + i + 0.3)), Math.abs(Math.sin(alpha + i - 1)), Math.abs(Math.sin(alpha + i + 2)));
+            }
+            
+            camera.position.x = controlerUI.cameraX;
+            camera.position.y = controlerUI.cameraY;
+            camera.position.z = controlerUI.cameraZ;
+            camera.lookAt(scene.position);
+        };
+    </script>
+</body></html>
