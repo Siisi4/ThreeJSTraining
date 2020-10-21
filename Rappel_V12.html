@@ -4,9 +4,9 @@
 
 <head>
     <title>Rappel 12</title>
-    <script type="text/javascript" src="../libs/three-r121.js"></script>
-    <script type="text/javascript" src="../libs/dat.gui.js"></script>
-    <script type="text/javascript" src="../libs/GLTFLoader.js"></script>
+    <script type="text/javascript" src="three-r121.js"></script>
+    <script type="text/javascript" src="dat.gui.js"></script>
+    <script type="text/javascript" src="glTFLoader.js"></script>
 
 </head>
 
@@ -19,7 +19,7 @@
 
     <script type="text/javascript">
         var block = [];
-        var scene, camera, renderer, spotlight, mesh;;
+        var scene, camera, renderer, spotlight, mesh, loader;
         var alpha = 0;
         var controlerUI = {
             cameraX: -30,
@@ -53,7 +53,7 @@
             var material = new THREE.MeshPhongMaterial({
                 color: 0xcccccc
             });
-            var loader = new THREE.GLTFLoader();
+            var loader = new GLTFLoader();
             loader.load('bus_body_red.glb', function (gltf) {
                 mesh = gltf.scene.children[0];
                 mesh.material = material;
@@ -76,7 +76,7 @@
 
             var listener = new THREE.AudioListener();
             var audio = new THREE.Audio(listener);
-            var file = './NinVsProdigy.mp3';
+            var file = './night_lovell.mp3';
 
             if (/(iPad|iPhone|iPod)/g.test(navigator.userAgent)) {
                 var loader = new THREE.AudioLoader();
