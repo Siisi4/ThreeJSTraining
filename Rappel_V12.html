@@ -12,7 +12,7 @@
 
 <body>
     <div id="overlay">
-        <button id="startButton">Play</button>
+        <button id="startButton">Démarrer</button>
     </div>
 
     <div id="WebGL-output"></div>
@@ -53,8 +53,8 @@
             var material = new THREE.MeshPhongMaterial({
                 color: 0xcccccc
             });
-            var loader = new GLTFLoader();
-            loader.load('bus_body_red.glb', function (gltf) {
+            var loader = new THREE.glTFLoader();
+            loader.load('Buggy.glb', function (gltf) {
                 mesh = gltf.scene.children[0];
                 mesh.material = material;
                 mesh.material.shading = THREE.SmoothShading;
