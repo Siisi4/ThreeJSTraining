@@ -5,6 +5,7 @@
 <head>
     <title>Rappel 4</title>
     <script type="text/javascript" src="three-r121.js"></script>
+    <script type="text/javascript" src="dat.gui.js"></script>
 </head>
 
 <body>
@@ -13,6 +14,7 @@
     <script type="text/javascript">
         var block = [];
         var scene, camera, renderer, spotlight;
+        var blockcolor;
         var alpha = 0;
 
         init();
@@ -54,16 +56,22 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
 
             document.getElementById("WebGL-output").appendChild(renderer.domElement);
+            
+            this.blockcolor = "#00ff9a";
+            var gui = new dat.GUI();
+            gui.addColor(this, 'blockcolor');
 
         };
 
         function render() {
             requestAnimationFrame(render);
             renderer.render(scene, camera);
+            
             alpha += 0.01;
             for (var i = 0; i < 10; i++) {
+                block[i].material.color.set(blockcolor);
                 block[i].scale.z = Math.abs(Math.sin(alpha + i)) * 8;
-                block[i].material.color = new THREE.Color(Math.abs(Math.sin(alpha + i + 0.2)), Math.abs(Math.sin(alpha + i)), Math.abs(Math.sin(alpha + i + 1.2)));
+                //block[i].material.color = new THREE.Color(Math.abs(Math.sin(alpha + i + 0.2)), Math.abs(Math.sin(alpha + i)), Math.abs(Math.sin(alpha + i + 1.2)));
             }
         };
     </script>
